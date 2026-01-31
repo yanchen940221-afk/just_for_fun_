@@ -81,14 +81,10 @@ body{
   opacity: 1;
 }
 
-/* ✅ 神奇寶貝收服：比 Pocket Monster 大，但不粗 */
-.subline.big{
-  font-size: clamp(18px, 12cqw, 56px); /* ✅ 小一點 */
-  font-weight: 100;
-  text-shadow: none;
-  -webkit-text-stroke: 0.6px #000;
-  paint-order: stroke fill;
+.subtitle .subline.big{
+  font-size: clamp(16px, 9cqw, 42px) !important; /* ✅ 保證變小 */
 }
+
 
 
 /* ✅ 嘉嘉篇：很大（你要再更大我也能再拉） */
