@@ -69,7 +69,8 @@ body{
   border-radius: 999px;
 }
 
-.subtitle{
+.subtitle{ margin-top: 14px;
+
   margin-top:8px;
   display:grid;
   gap:2px;
@@ -95,10 +96,19 @@ body{
      0px  2px 0 #000;
 }
 
-  .subline.big{
-  font-size: clamp(44px, 9.2vw, 78px);  /* ✅ 明顯大於上面 logo */
-  font-weight: 600;                      /* ✅ 稍微細一點 */
-  letter-spacing: .10em;
+.subline.big{
+  font-size: clamp(34px, 7vw, 54px);  /* ✅ 超大：手機到桌機都會很大 */
+  font-weight: 600;                  /* ✅ 更細一點 */
+  letter-spacing: .12em;
+  line-height: 1.05;
+
+  text-shadow:
+    -1px -1px 0 #000,
+     1px -1px 0 #000,
+    -1px  1px 0 #000,
+     1px  1px 0 #000;
+}
+
 
   /* 外框不要太厚，維持清楚但更「細」 */
   text-shadow:
