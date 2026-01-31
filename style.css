@@ -1,0 +1,155 @@
+:root{
+  --ink:#111;
+  --paper:#f2f2f2;
+  --paper2:#e6e6e6;
+  --shadow:#000;
+}
+
+*{ box-sizing:border-box; }
+html,body{ height:100%; }
+body{
+  margin:0;
+  background: radial-gradient(circle at 30% 20%, #ffffff 0%, #e9e9e9 55%, #dcdcdc 100%);
+  font-family: "Noto Sans TC", system-ui, -apple-system, "PingFang TC", "Microsoft JhengHei", sans-serif;
+  color:var(--ink);
+}
+
+.page{
+  min-height:100%;
+  display:grid;
+  place-items:center;
+  padding:24px;
+}
+
+.screen{
+  text-decoration:none;
+  color:inherit;
+  display:inline-block;
+  outline:none;
+}
+
+.gb{
+  width:min(92vw, 520px);
+  aspect-ratio: 160 / 144;
+  border:10px solid #111;
+  border-radius:14px;
+  background:
+    linear-gradient(180deg, var(--paper) 0%, var(--paper2) 100%);
+  position:relative;
+  overflow:hidden;
+
+  /* 像素感 */
+  image-rendering: pixelated;
+  box-shadow:
+    0 18px 45px rgba(0,0,0,.25),
+    inset 0 0 0 2px rgba(255,255,255,.35);
+}
+
+.title{
+  padding:10px 10px 4px;
+  text-align:center;
+}
+
+.logo-top{
+  font-family:"Press Start 2P", monospace;
+  font-size: clamp(10px, 2.2vw, 16px);
+  letter-spacing: 1px;
+
+  /* 粗外框 + 陰影：復古主標氛圍（非商標字形） */
+  color: var(--paper);
+  text-shadow:
+    -2px -2px 0 var(--shadow),
+     2px -2px 0 var(--shadow),
+    -2px  2px 0 var(--shadow),
+     2px  2px 0 var(--shadow),
+     0px  3px 0 var(--shadow);
+  background: #111;
+  display:inline-block;
+  padding:8px 10px 6px;
+  border-radius: 999px;
+}
+
+.subtitle{
+  margin-top:8px;
+  display:grid;
+  gap:2px;
+}
+
+.subline{
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+
+.subline.big{
+  font-size: clamp(12px, 2.8vw, 18px);
+  text-shadow:
+    -1px -1px 0 #000,
+     1px -1px 0 #000,
+    -1px  1px 0 #000,
+     1px  1px 0 #000;
+}
+
+.subline.small{
+  font-size: clamp(11px, 2.2vw, 16px);
+  font-weight: 800;
+  opacity:.95;
+}
+
+.art{
+  height: calc(100% - 82px);
+  display:grid;
+  place-items:center;
+  padding: 6px 10px 18px;
+}
+
+.mascot{
+  width: min(55%, 220px);
+  max-height: 100%;
+  object-fit: contain;
+  filter: grayscale(1) contrast(1.2);
+}
+
+.hint{
+  position:absolute;
+  left:10px;
+  right:10px;
+  bottom:8px;
+  text-align:center;
+  font-weight:800;
+  font-size: clamp(10px, 2vw, 14px);
+  letter-spacing:.08em;
+}
+
+.blink{
+  display:inline-block;
+  margin-right:6px;
+  animation: blink 1s steps(2, end) infinite;
+}
+
+@keyframes blink { 50% { opacity:0; } }
+
+.overlay{
+  pointer-events:none;
+  position:absolute;
+  inset:0;
+  background:
+    /* 掃描線 */
+    repeating-linear-gradient(
+      to bottom,
+      rgba(0,0,0,.05) 0px,
+      rgba(0,0,0,.05) 1px,
+      rgba(255,255,255,.00) 2px,
+      rgba(255,255,255,.00) 4px
+    ),
+    /* 顆粒 */
+    radial-gradient(circle at 20% 30%, rgba(0,0,0,.06), rgba(0,0,0,0) 45%),
+    radial-gradient(circle at 80% 60%, rgba(0,0,0,.05), rgba(0,0,0,0) 45%);
+  mix-blend-mode:multiply;
+  opacity:.55;
+}
+
+.screen:focus-visible .gb,
+.screen:hover .gb{
+  transform: translateY(-2px);
+  transition: transform .12s ease;
+}
