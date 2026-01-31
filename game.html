@@ -8,6 +8,18 @@
   <!-- 跟首頁同一份 CSS（如果你叫 style.css） -->
   <link rel="stylesheet" href="./style.css?v=game1" />
   <style>
+    /* ✅ 放大人物：不糊、保持像素 */
+.playerWrap{
+  transform: scale(1.35);   /* 1.2~1.8 自己調 */
+  transform-origin: center bottom; /* 從腳底放大比較自然 */
+}
+
+/* 放大後陰影也要跟著變大一點（可選） */
+.shadow{
+  width: 78px;
+  height: 16px;
+}
+
     /* 這頁專用的小補丁（不改你原本首頁排版） */
     .gb{ padding: 14px; }
 
