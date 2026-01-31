@@ -145,11 +145,18 @@ body{
   letter-spacing: .08em;
 }
 
-/* ✅ 神奇寶貝收服：真的超大（用固定 px 先確認效果） */
 .subline.big{
-  font-size: 56px;     /* 先用固定值，確保一定變大 */
-  font-weight: 600;    /* 稍微細一點 */
+  font-size: 40px;      /* 你現在用固定值先穩 */
+  font-weight: 600;     /* 稍微細 */
+  letter-spacing: .08em;
   line-height: 1.02;
+
+  text-shadow: 0 1px 0 rgba(0,0,0,.25);
+
+  /* ✅ 用極細描邊（看起來不會那麼粗） */
+  -webkit-text-stroke: 1px #000;   /* Chrome/Safari */
+  paint-order: stroke fill;        /* 支援的瀏覽器會先畫描邊 */
+}
 
   /* ✅ 把外框變薄，不要讓你誤以為只是變粗 */
   text-shadow:
