@@ -84,7 +84,7 @@ body{
 /* ✅ 神奇寶貝收服：比 Pocket Monster 大，但不粗 */
 .subline.big{
   font-size: clamp(44px, 16cqw, 74px); /* 跟掌機寬度縮放 */
-  font-weight: 600;
+  font-weight: 400;
   text-shadow: none;
   -webkit-text-stroke: 0.6px #000; /* 細邊，不會變粗一圈 */
   paint-order: stroke fill;
