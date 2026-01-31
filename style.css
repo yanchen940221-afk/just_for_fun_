@@ -29,6 +29,7 @@ body{
 }
 
 .gb{
+   container-type: inline-size;
   width:min(92vw, 520px);
   aspect-ratio: 160 / 144;
   border:10px solid #111;
@@ -69,12 +70,19 @@ body{
   border-radius: 999px;
 }
 
-.subtitle{ margin-top: 14px;
+.subtitle .subline.big{
+  font-size: clamp(34px, 18cqw, 72px);  /* ✅ 跟 .gb 寬度走，保證變大 */
+  font-weight: 600;                     /* ✅ 稍微細 */
+  letter-spacing: .08em;
+  line-height: 1.02;
 
-  margin-top:8px;
-  display:grid;
-  gap:2px;
+  text-shadow:
+    -1px -1px 0 #000,
+     1px -1px 0 #000,
+    -1px  1px 0 #000,
+     1px  1px 0 #000;
 }
+.subtitle{ margin-top: 16px; }
 
 .subline{
  /* 原本：logo-top 的大小不用動 */
