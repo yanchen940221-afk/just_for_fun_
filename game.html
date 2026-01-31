@@ -140,42 +140,41 @@
     </main>
   </div>
 
-  <script>
-    const $ = (s) => document.querySelector(s);
-    const input = $("#nick");
-    const ok = $("#ok");
+<script>
+  const input = document.getElementById("nick");
+  const ok = document.getElementById("ok");
 
-    function cleanName(s){
-      // 去頭尾空白 + 連續空白縮成單一空白
-      return s.trim().replace(/\\s+/g, " ");
+  function cleanName(s){
+    return (s || "").trim().replace(/\s+/g, " ");
+  }
+
+  function submit(){
+    const name = cleanName(input.value);
+    if(!name){
+      input.focus();
+      return;
     }
+    localStorage.setItem("playerName", name);
 
-    function submit(){
-      const name = cleanName(input.value);
-      if(!name){
-        input.focus();
-        input.style.borderColor = "#ff3b30";
-        setTimeout(()=> input.style.borderColor = "", 350);
-        return;
-      }
-      localStorage.setItem("playerName", name);
+    // ✅ 跳到 world
+    window.location.assign("world.html?v=2");
+  }
 
-      // ✅ 下一頁：你可以之後做 world.html / intro2.html
-      // 先暫時跳回首頁或跳到你想要的頁面
-      window.location.href = "./world.html?v=1";
+  ok.addEventListener("click", submit);
+
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      submit();
     }
+  });
 
-    ok.addEventListener("click", submit);
-    input.addEventListener("keydown", (e) => {
-      if(e.key === "Enter") submit();
-    });
+  // 自動聚焦
+  setTimeout(() => input.focus(), 100);
+</script>
 
-    // 自動聚焦
-    setTimeout(()=> input.focus(), 120);
-    <div class="playerWrap" aria-label="玩家角色">
   <img class="player" src="./assets/player.png" alt="玩家角色" />
   <div class="shadow" aria-hidden="true"></div>
 </div>
-  </script>
 </body>
 </html>
