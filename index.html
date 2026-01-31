@@ -1,1 +1,280 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <title>交往一年生存指南</title>
+  <style>
+  :root{
+    --bg:#0b1020;
+    --panel:#121a2f;
+    --panel2:#0e1528;
+    --text:#e8f0ff;
+    --muted:#a9b6d6;
+    --border:#e8f0ff;
+    --accent:#7cf7ff;
+  }
+
+  body{
+    margin:0;
+    background:
+      linear-gradient(transparent 15px, rgba(255,255,255,.05) 16px),
+      linear-gradient(90deg, transparent 15px, rgba(255,255,255,.05) 16px),
+      var(--bg);
+    background-size:16px 16px;
+    color:var(--text);
+    display:flex;
+    justify-content:center;
+    font-family:"Press Start 2P", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    letter-spacing:0.5px;
+  }
+
+  .wrap{max-width:720px;width:100%;padding:18px;}
+
+  /* 卡片變成像素框 */
+  .card{
+    background:linear-gradient(var(--panel), var(--panel2));
+    border:4px solid var(--border);
+    border-radius:0;
+    padding:16px;
+    margin:14px 0;
+    box-shadow: 0 0 0 4px rgba(0,0,0,.35), 10px 10px 0 rgba(0,0,0,.45);
+  }
+
+  h1{font-size:16px;margin:0 0 10px;line-height:1.5;}
+  h2{font-size:14px;margin:0 0 10px;line-height:1.6;}
+  p{margin:10px 0;line-height:1.8;color:var(--muted);font-size:12px;}
+
+  .topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;}
+  .pill{
+    border:3px solid var(--border);
+    border-radius:0;
+    padding:8px 10px;
+    background:#0b1328;
+    color:var(--text);
+    font-size:11px;
+  }
+
+  /* 按鈕像復古 RPG 選單 */
+  .btn{
+    border:3px solid var(--border);
+    background:#0b1328;
+    color:var(--text);
+    padding:12px 12px;
+    border-radius:0;
+    cursor:pointer;
+    margin:10px 10px 0 0;
+    text-decoration:none;
+    display:inline-block;
+    font-size:12px;
+  }
+  .btn.primary{
+    background:var(--accent);
+    color:#001018;
+    border-color:var(--accent);
+  }
+  .btn:hover{filter:brightness(1.05); transform:translateY(-1px);}
+
+  .choices{display:flex;flex-direction:column;gap:10px;margin-top:12px;}
+
+  .choice{
+    padding:14px;
+    border-radius:0;
+    border:3px solid var(--border);
+    background:#0b1328;
+    cursor:pointer;
+    text-align:left;
+    font-size:12px;
+    line-height:1.7;
+    position:relative;
+  }
+  .choice::before{
+    content:"▶";
+    position:absolute;
+    left:10px;
+    top:50%;
+    transform:translateY(-50%);
+    opacity:0;
+  }
+  .choice{padding-left:32px;}
+  .choice:hover::before{opacity:1;}
+  .choice:hover{outline:3px solid rgba(124,247,255,.55);}
+
+  .small{font-size:11px;color:var(--muted);}
+
+  .hidden{display:none;}
+
+  /* 手機：字太擠就縮一點 */
+  @media (max-width:420px){
+    h1{font-size:14px;}
+    p,.btn,.choice,.pill{font-size:11px;}
+  }
+</style>
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card" id="screen-start">
+      <div class="topbar">
+        <div class="pill">🎮 Boyfriend Simulator</div>
+        <div class="pill">❤️ <span id="score">0</span></div>
+      </div>
+      <h1 style="margin-top:14px;">交往一年生存指南：<span id="bfName"></span> 版</h1>
+      <p>規則很簡單：選你覺得「最正確」的操作。每一關都會加愛心分數。通關後會解鎖生日彩蛋。</p>
+      <button class="btn primary" id="btnStart">開始遊戲</button>
+      <button class="btn" id="btnTest">先看看結尾（測試用）</button>
+      <p class="small">小提示：題目越私人越好笑（口頭禪、怪癖、你們的梗）。</p>
+    </div>
+
+    <div class="card hidden" id="screen-quiz">
+      <div class="topbar">
+        <div class="pill">關卡 <span id="qIndex">1</span>/3</div>
+        <div class="pill">❤️ <span id="score2">0</span></div>
+      </div>
+      <h2 id="question"></h2>
+      <div class="choices" id="choices"></div>
+      <p class="small" id="feedback"></p>
+      <button class="btn hidden" id="btnNext">下一關</button>
+    </div>
+
+    <div class="card hidden" id="screen-end">
+      <div class="topbar">
+        <div class="pill">✅ 通關成功</div>
+        <div class="pill">❤️ <span id="finalScore">0</span></div>
+      </div>
+      <h2 id="titleResult"></h2>
+      <p id="textResult"></p>
+      <div style="margin-top:10px;">
+        <a class="btn primary" id="btnGift" href="#" target="_blank" rel="noopener">打開禮物影片 🎁</a>
+        <button class="btn" id="btnRestart">再玩一次</button>
+      </div>
+      <p class="small">如果你願意：看完影片後回我一句「我最喜歡的是哪一關」🙂</p>
+    </div>
+  </div>
+
+<script>
+  // ✅ 你只要改這兩個
+  const BOYFRIEND_NAME = "BOYFRIEND_NAME";
+  const GIFT_VIDEO_URL = "GIFT_VIDEO_URL"; // 例如 YouTube 不公開連結/雲端分享連結
+
+  // ✅ 你也可以把題目改成你們的梗
+  const quiz = [
+    {
+      q: "第 1 關：當你（男友）電量只剩 5%，最佳救援方式是？",
+      a: [
+        { text: "抱抱模式（立刻回血）", score: 2, fb: "正解。抱一下真的很有效。" },
+        { text: "餵食模式（先有熱量再談人生）", score: 2, fb: "正解。補給是核心技能。" },
+        { text: "逼問模式：你怎麼了？你說啊！", score: 0, fb: "有用，但容易觸發『更累』狀態。" }
+      ]
+    },
+    {
+      q: "第 2 關：當你說「我不餓」，我應該？",
+      a: [
+        { text: "完全相信你（並撤退）", score: 0, fb: "風險極高：10 分鐘後可能出現『餓到沒耐心』。" },
+        { text: "先買再說（你一定會吃）", score: 2, fb: "正解。這是多年觀察得出的結論。" },
+        { text: "自己吃完不分你（看你怎樣）", score: -1, fb: "危險操作，但很有喜劇效果。" }
+      ]
+    },
+    {
+      q: "第 3 關：當你心情不太好/有點累時，最好的相處方式是？",
+      a: [
+        { text: "先停一下，等你準備好再講（我在）", score: 2, fb: "正解。這是『靈魂隊友』操作。" },
+        { text: "立刻講大道理（希望你秒懂）", score: 0, fb: "有心但容易讓你更疲倦。" },
+        { text: "直接消失/冷處理", score: -2, fb: "這會扣很多分…不建議 😭" }
+      ]
+    }
+  ];
+
+  let score = 0;
+  let i = 0;
+  let locked = false;
+
+  const $ = (id) => document.getElementById(id);
+
+  function setScore() {
+    $("score").textContent = score;
+    $("score2").textContent = score;
+  }
+
+  function show(screenId) {
+    ["screen-start","screen-quiz","screen-end"].forEach(id => $(id).classList.add("hidden"));
+    $(screenId).classList.remove("hidden");
+  }
+
+  function renderQ() {
+    locked = false;
+    $("feedback").textContent = "";
+    $("btnNext").classList.add("hidden");
+    $("qIndex").textContent = (i+1);
+    $("question").textContent = quiz[i].q;
+    const box = $("choices");
+    box.innerHTML = "";
+    quiz[i].a.forEach((opt) => {
+      const btn = document.createElement("button");
+      btn.className = "choice";
+      btn.textContent = opt.text;
+      btn.onclick = () => pick(opt);
+      box.appendChild(btn);
+    });
+    setScore();
+  }
+
+  function pick(opt) {
+    if (locked) return;
+    locked = true;
+    score += opt.score;
+    setScore();
+    $("feedback").textContent = opt.fb + `（本關 ${opt.score >= 0 ? "+" : ""}${opt.score}）`;
+    $("btnNext").classList.remove("hidden");
+  }
+
+  function endScreen() {
+    $("finalScore").textContent = score;
+    let title, text;
+    if (score >= 6) {
+      title = "🏆 SSS級：靈魂隊友型女友";
+      text = `生日快樂，${BOYFRIEND_NAME}。這一年我最確定的一件事是：我想一直跟你組隊。謝謝你把我放在心上，也謝謝你一直在。`;
+    } else if (score >= 3) {
+      title = "⭐ A級：穩定通關型女友";
+      text = `生日快樂，${BOYFRIEND_NAME}。我們很會一起把日子過好。下一關也請讓我繼續陪你通關。`;
+    } else {
+      title = "🎀 可愛新手：需要更多抱抱練習";
+      text = `生日快樂，${BOYFRIEND_NAME}。就算我偶爾操作失誤，我也還是最喜歡你。謝謝你這一年都很包容我。`;
+    }
+    $("titleResult").textContent = title;
+    $("textResult").textContent = text;
+    $("btnGift").href = GIFT_VIDEO_URL;
+    show("screen-end");
+  }
+
+  $("bfName").textContent = BOYFRIEND_NAME;
+
+  $("btnStart").onclick = () => {
+    score = 0; i = 0;
+    show("screen-quiz");
+    renderQ();
+  };
+
+  $("btnNext").onclick = () => {
+    if (i < quiz.length - 1) { i++; renderQ(); }
+    else { endScreen(); }
+  };
+
+  $("btnRestart").onclick = () => {
+    score = 0; i = 0;
+    show("screen-start");
+    setScore();
+  };
+
+  $("btnTest").onclick = () => { score = 6; endScreen(); };
+
+  // init
+  setScore();
+</script>
+</body>
+</html>
+
 
