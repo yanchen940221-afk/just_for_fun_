@@ -147,7 +147,7 @@ body{
 
 .subline.big{
   font-size: 20px;      /* 你現在用固定值先穩 */
-  font-weight: ㄉ00;     /* 稍微細 */
+  font-weight: 200;     /* 稍微細 */
   letter-spacing: .08em;
   line-height: 1.02;
 
@@ -167,7 +167,7 @@ body{
 }
 
 .subline.small{
-  font-size: 44px;     /* ✅ 很大：你可再往上加 */
+  font-size: 150px;     /* ✅ 很大：你可再往上加 */
   font-weight: 600;    /* ✅ 稍微細一點 */
   letter-spacing: .10em;
   line-height: 1.02;
