@@ -259,6 +259,18 @@ body{
 .overlay{
   opacity: .8 !important;
   mix-blend-mode: multiply !important;
+  @keyframes noiseShift{
+  0%{ transform: translate(0,0); }
+  25%{ transform: translate(1px,0); }
+  50%{ transform: translate(0,1px); }
+  75%{ transform: translate(-1px,0); }
+  100%{ transform: translate(0,0); }
+}
+
+.overlay{
+  animation: noiseShift .18s steps(2,end) infinite;
+}
+
 }
 /* 外框外面的背景：強制全黑 */
 html, body{
