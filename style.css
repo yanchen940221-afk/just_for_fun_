@@ -278,6 +278,63 @@ html, body{
 }
 .page{ background: transparent !important; }
 
+/* 角色上下浮動 */
+@keyframes bob{
+  0%,100% { transform: translateY(0); }
+  50%     { transform: translateY(-6px); } /* 往上浮 6px，可改 4~10 */
+}
+
+.player{
+  animation: bob 0.9s steps(2,end) infinite;
+  image-rendering: pixelated;
+
+}
+
+/* 角色容器：讓陰影可以定位 */
+.playerWrap{
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+}
+
+/* 角色上下浮動（你原本有就保留；沒有就加） */
+@keyframes bob{
+  0%,100% { transform: translateY(0); }
+  50%     { transform: translateY(-6px); }
+}
+.player{
+  animation: bob 1.1s ease-in-out infinite;
+  image-rendering: pixelated;
+  will-change: transform;
+  position: relative;
+  z-index: 2;
+}
+
+/* ✅ 腳下陰影：早期掌機風格 */
+.shadow{
+  position: absolute;
+  left: 50%;
+  bottom: 6px;                 /* 陰影貼近腳底；可調 0~10 */
+  transform: translateX(-50%);
+  width: 64px;                 /* 陰影大小：可調 40~80 */
+  height: 14px;
+  border-radius: 999px;
+
+  /* 用 GB 深綠 + 透明，像「印在螢幕」 */
+  background: rgba(8, 24, 32, .35);
+  filter: blur(.2px);          /* 近似掌機柔邊，不會太現代 */
+  z-index: 1;
+}
+
+/* ✅ 陰影跟著浮動：上去時變小、落地時變大 */
+@keyframes shadowSquash{
+  0%,100% { transform: translateX(-50%) scale(1.05); opacity: .38; }
+  50%     { transform: translateX(-50%) scale(.82);  opacity: .24; }
+}
+.shadow{
+  animation: shadowSquash 1.1s ease-in-out infinite;
+  will-change: transform, opacity;
+}
 
 
 
