@@ -3,278 +3,519 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>生存指南對戰</title>
+
+  <!-- 像素字體：更像 Game Boy（可留可不留） -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-  <title>交往一年生存指南</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
   <style>
-  :root{
-    --bg:#0b1020;
-    --panel:#121a2f;
-    --panel2:#0e1528;
-    --text:#e8f0ff;
-    --muted:#a9b6d6;
-    --border:#e8f0ff;
-    --accent:#7cf7ff;
-  }
+    :root{
+      --gb0:#0b1f17;   /* 最深 */
+      --gb1:#183a2c;
+      --gb2:#5fa65f;
+      --gb3:#d8f7c8;   /* 最亮 */
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:linear-gradient(#08150f, #06110c);
+      color:var(--gb0);
+      display:flex;
+      justify-content:center;
+      font-family:"Press Start 2P", ui-monospace, Menlo, Monaco, Consolas, monospace;
+    }
+    .wrap{width:min(880px, 100%); padding:14px;}
+    .screen{
+      background:var(--gb3);
+      border:6px solid var(--gb0);
+      box-shadow: 0 0 0 6px var(--gb2), 10px 10px 0 rgba(0,0,0,.35);
+      padding:12px;
+    }
 
-  body{
-    margin:0;
-    background:
-      linear-gradient(transparent 15px, rgba(255,255,255,.05) 16px),
-      linear-gradient(90deg, transparent 15px, rgba(255,255,255,.05) 16px),
-      var(--bg);
-    background-size:16px 16px;
-    color:var(--text);
-    display:flex;
-    justify-content:center;
-    font-family:"Press Start 2P", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-    letter-spacing:0.5px;
-  }
+    /* 像素化邊框感 */
+    .box{
+      border:4px solid var(--gb0);
+      background:var(--gb3);
+      padding:10px;
+    }
 
-  .wrap{max-width:720px;width:100%;padding:18px;}
+    .battle{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+      align-items:stretch;
+    }
 
-  /* 卡片變成像素框 */
-  .card{
-    background:linear-gradient(var(--panel), var(--panel2));
-    border:4px solid var(--border);
-    border-radius:0;
-    padding:16px;
-    margin:14px 0;
-    box-shadow: 0 0 0 4px rgba(0,0,0,.35), 10px 10px 0 rgba(0,0,0,.45);
-  }
+    .spriteBox{
+      height:180px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:
+        linear-gradient(transparent 15px, rgba(0,0,0,.08) 16px),
+        linear-gradient(90deg, transparent 15px, rgba(0,0,0,.08) 16px);
+      background-size:16px 16px;
+      border:4px solid var(--gb0);
+    }
 
-  h1{font-size:16px;margin:0 0 10px;line-height:1.5;}
-  h2{font-size:14px;margin:0 0 10px;line-height:1.6;}
-  p{margin:10px 0;line-height:1.8;color:var(--muted);font-size:12px;}
+    /* 用純 CSS 做兩個「像素角色」(不靠圖片也很像) */
+    .sprite{
+      width:96px; height:96px;
+      image-rendering: pixelated;
+      background:var(--gb1);
+      box-shadow:
+        16px 16px 0 var(--gb1),
+        32px 16px 0 var(--gb1),
+        48px 16px 0 var(--gb1),
+        16px 32px 0 var(--gb1),
+        32px 32px 0 var(--gb2),
+        48px 32px 0 var(--gb1),
+        16px 48px 0 var(--gb1),
+        32px 48px 0 var(--gb1),
+        48px 48px 0 var(--gb1);
+      transform:scale(1.8);
+    }
+    .sprite.opponent{
+      transform:scale(1.6) rotate(0deg);
+      box-shadow:
+        16px 16px 0 var(--gb1),
+        32px 16px 0 var(--gb1),
+        48px 16px 0 var(--gb1),
+        64px 16px 0 var(--gb1),
+        16px 32px 0 var(--gb1),
+        32px 32px 0 var(--gb2),
+        48px 32px 0 var(--gb2),
+        64px 32px 0 var(--gb1),
+        16px 48px 0 var(--gb1),
+        32px 48px 0 var(--gb1),
+        48px 48px 0 var(--gb1),
+        64px 48px 0 var(--gb1);
+    }
 
-  .topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;}
-  .pill{
-    border:3px solid var(--border);
-    border-radius:0;
-    padding:8px 10px;
-    background:#0b1328;
-    color:var(--text);
-    font-size:11px;
-  }
+    .status{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
 
-  /* 按鈕像復古 RPG 選單 */
-  .btn{
-    border:3px solid var(--border);
-    background:#0b1328;
-    color:var(--text);
-    padding:12px 12px;
-    border-radius:0;
-    cursor:pointer;
-    margin:10px 10px 0 0;
-    text-decoration:none;
-    display:inline-block;
-    font-size:12px;
-  }
-  .btn.primary{
-    background:var(--accent);
-    color:#001018;
-    border-color:var(--accent);
-  }
-  .btn:hover{filter:brightness(1.05); transform:translateY(-1px);}
+    .nameRow{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      font-size:12px;
+      color:var(--gb0);
+    }
+    .lvl{opacity:.9}
 
-  .choices{display:flex;flex-direction:column;gap:10px;margin-top:12px;}
+    .hpRow{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-size:10px;
+    }
+    .hpBar{
+      position:relative;
+      width:100%;
+      height:14px;
+      border:3px solid var(--gb0);
+      background:var(--gb3);
+    }
+    .hpFill{
+      height:100%;
+      width:100%;
+      background:var(--gb2);
+      transition: width .25s linear;
+    }
+    .hpNum{min-width:88px; text-align:right;}
 
-  .choice{
-    padding:14px;
-    border-radius:0;
-    border:3px solid var(--border);
-    background:#0b1328;
-    cursor:pointer;
-    text-align:left;
-    font-size:12px;
-    line-height:1.7;
-    position:relative;
-  }
-  .choice::before{
-    content:"▶";
-    position:absolute;
-    left:10px;
-    top:50%;
-    transform:translateY(-50%);
-    opacity:0;
-  }
-  .choice{padding-left:32px;}
-  .choice:hover::before{opacity:1;}
-  .choice:hover{outline:3px solid rgba(124,247,255,.55);}
+    .bottom{
+      margin-top:10px;
+      display:grid;
+      grid-template-columns: 1.4fr .6fr;
+      gap:10px;
+    }
 
-  .small{font-size:11px;color:var(--muted);}
+    .dialog{
+      height:150px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+    }
+    .text{
+      font-size:12px;
+      line-height:1.8;
+      min-height:70px;
+      white-space:pre-wrap;
+    }
+    .hint{
+      font-size:10px;
+      opacity:.9;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+    .caret{font-size:14px}
 
-  .hidden{display:none;}
+    .menu{
+      height:150px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .menuGrid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:8px;
+      height:100%;
+    }
+    .btn{
+      border:4px solid var(--gb0);
+      background:var(--gb3);
+      font-family:inherit;
+      font-size:11px;
+      padding:10px 8px;
+      cursor:pointer;
+      position:relative;
+      text-align:left;
+    }
+    .btn:hover{background:#c9f2b5}
+    .btn:disabled{opacity:.55; cursor:not-allowed}
+    .btn.sel::before{
+      content:"▶";
+      position:absolute;
+      left:6px;
+    }
+    .btn span{margin-left:18px; display:inline-block}
 
-  /* 手機：字太擠就縮一點 */
-  @media (max-width:420px){
-    h1{font-size:14px;}
-    p,.btn,.choice,.pill{font-size:11px;}
-  }
-</style>
+    .topTitle{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      margin-bottom:10px;
+      font-size:12px;
+      color:var(--gb3);
+    }
+    .badge{
+      border:3px solid var(--gb3);
+      padding:8px 10px;
+    }
+
+    a.linkBtn{
+      display:inline-block;
+      border:4px solid var(--gb0);
+      background:var(--gb2);
+      color:var(--gb0);
+      text-decoration:none;
+      padding:10px 12px;
+      font-size:11px;
+    }
+    a.linkBtn:hover{filter:brightness(1.05)}
   </style>
 </head>
+
 <body>
   <div class="wrap">
-    <div class="card" id="screen-start">
-      <div class="topbar">
-        <div class="pill">🎮 Boyfriend Simulator</div>
-        <div class="pill">❤️ <span id="score">0</span></div>
-      </div>
-      <h1 style="margin-top:14px;">交往一年生存指南：<span id="bfName"></span> 版</h1>
-      <p>規則很簡單：選你覺得「最正確」的操作。每一關都會加愛心分數。通關後會解鎖生日彩蛋。</p>
-      <button class="btn primary" id="btnStart">開始遊戲</button>
-      <button class="btn" id="btnTest">先看看結尾（測試用）</button>
-      <p class="small">小提示：題目越私人越好笑（口頭禪、怪癖、你們的梗）。</p>
+    <div class="topTitle">
+      <div class="badge">🎮 生存指南對戰</div>
+      <div class="badge">按鈕操作：點選右側選單</div>
     </div>
 
-    <div class="card hidden" id="screen-quiz">
-      <div class="topbar">
-        <div class="pill">關卡 <span id="qIndex">1</span>/3</div>
-        <div class="pill">❤️ <span id="score2">0</span></div>
-      </div>
-      <h2 id="question"></h2>
-      <div class="choices" id="choices"></div>
-      <p class="small" id="feedback"></p>
-      <button class="btn hidden" id="btnNext">下一關</button>
-    </div>
+    <div class="screen">
+      <div class="battle">
+        <!-- 左上：對手狀態 -->
+        <div class="status box">
+          <div class="nameRow">
+            <div id="oppName">對手</div>
+            <div class="lvl">Lv <span id="oppLv">12</span></div>
+          </div>
+          <div class="hpRow">
+            <div>HP</div>
+            <div class="hpBar"><div class="hpFill" id="oppHpFill"></div></div>
+          </div>
+          <div class="hpNum"><span id="oppHpText">20</span>/20</div>
+        </div>
 
-    <div class="card hidden" id="screen-end">
-      <div class="topbar">
-        <div class="pill">✅ 通關成功</div>
-        <div class="pill">❤️ <span id="finalScore">0</span></div>
+        <!-- 右上：對手 sprite -->
+        <div class="spriteBox">
+          <div class="sprite opponent" aria-label="opponent"></div>
+        </div>
+
+        <!-- 左下：自己 sprite -->
+        <div class="spriteBox">
+          <div class="sprite" aria-label="player"></div>
+        </div>
+
+        <!-- 右下：自己狀態 -->
+        <div class="status box">
+          <div class="nameRow">
+            <div id="meName">你</div>
+            <div class="lvl">Lv <span id="meLv">12</span></div>
+          </div>
+          <div class="hpRow">
+            <div>HP</div>
+            <div class="hpBar"><div class="hpFill" id="meHpFill"></div></div>
+          </div>
+          <div class="hpNum"><span id="meHpText">20</span>/20</div>
+        </div>
       </div>
-      <h2 id="titleResult"></h2>
-      <p id="textResult"></p>
-      <div style="margin-top:10px;">
-        <a class="btn primary" id="btnGift" href="#" target="_blank" rel="noopener">打開禮物影片 🎁</a>
-        <button class="btn" id="btnRestart">再玩一次</button>
+
+      <div class="bottom">
+        <!-- 對話框 -->
+        <div class="dialog box">
+          <div class="text" id="dialogText"></div>
+          <div class="hint">
+            <div id="subHint">…</div>
+            <div class="caret" id="caret">▼</div>
+          </div>
+        </div>
+
+        <!-- 選單 -->
+        <div class="menu box">
+          <div class="menuGrid" id="menuGrid"></div>
+        </div>
       </div>
-      <p class="small">如果你願意：看完影片後回我一句「我最喜歡的是哪一關」🙂</p>
+
+      <div class="box" style="margin-top:10px; display:flex; justify-content:space-between; align-items:center; gap:10px;">
+        <div style="font-size:10px;">通關後會解鎖 🎁</div>
+        <a class="linkBtn" id="giftBtn" href="#" target="_blank" rel="noopener" style="display:none;">打開禮物影片</a>
+      </div>
     </div>
   </div>
 
 <script>
-  // ✅ 你只要改這兩個
+  // 你只要改這兩行
   const BOYFRIEND_NAME = "BOYFRIEND_NAME";
-  const GIFT_VIDEO_URL = "GIFT_VIDEO_URL"; // 例如 YouTube 不公開連結/雲端分享連結
+  const GIFT_VIDEO_URL = "GIFT_VIDEO_URL";
 
-  // ✅ 你也可以把題目改成你們的梗
-  const quiz = [
+  // 基本狀態
+  const state = {
+    stage: 0,
+    busy: false,
+    oppHp: 20, oppMax: 20,
+    meHp: 20,  meMax: 20,
+  };
+
+  // 三個關卡（生存指南題目）做成「招式」
+  const stages = [
     {
-      q: "第 1 關：當你（男友）電量只剩 5%，最佳救援方式是？",
-      a: [
-        { text: "抱抱模式（立刻回血）", score: 2, fb: "正解。抱一下真的很有效。" },
-        { text: "餵食模式（先有熱量再談人生）", score: 2, fb: "正解。補給是核心技能。" },
-        { text: "逼問模式：你怎麼了？你說啊！", score: 0, fb: "有用，但容易觸發『更累』狀態。" }
-      ]
+      intro: () => `野生的 ${BOYFRIEND_NAME} 出現了！\n${BOYFRIEND_NAME} 使出了「嘴硬：我沒事」。`,
+      prompt: () => "你要怎麼應對？",
+      moves: [
+        { name: "抱抱模式", dmg: 6, msg: "你使用了「抱抱」！對方情緒穩定上升！", good: true },
+        { name: "餵食模式", dmg: 6, msg: "你丟出了「食物」！有效！", good: true },
+        { name: "逼問模式", dmg: 2, msg: "你使用了「逼問」…效果普通。", good: false },
+        { name: "放空等待", dmg: 3, msg: "你選擇先陪著不逼他…慢慢有效。", good: true },
+      ],
+      counter: () => ({ dmg: 3, msg: `${BOYFRIEND_NAME} 使出「我真的沒事」！你有點著急…` })
     },
     {
-      q: "第 2 關：當你說「我不餓」，我應該？",
-      a: [
-        { text: "完全相信你（並撤退）", score: 0, fb: "風險極高：10 分鐘後可能出現『餓到沒耐心』。" },
-        { text: "先買再說（你一定會吃）", score: 2, fb: "正解。這是多年觀察得出的結論。" },
-        { text: "自己吃完不分你（看你怎樣）", score: -1, fb: "危險操作，但很有喜劇效果。" }
-      ]
+      intro: () => `${BOYFRIEND_NAME} 的 HP 還在！\n${BOYFRIEND_NAME} 觸發事件：「我不餓」。`,
+      prompt: () => "你的操作是？",
+      moves: [
+        { name: "先買再說", dmg: 7, msg: "你使出「先買再說」！傳說級正解。", good: true },
+        { name: "完全相信", dmg: 2, msg: "你相信了…風險很高。", good: false },
+        { name: "分一口試試", dmg: 5, msg: "你遞出一口…對方開始動搖。", good: true },
+        { name: "裝可憐", dmg: 4, msg: "你使出「裝可憐」…有效但有點害羞。", good: true },
+      ],
+      counter: () => ({ dmg: 4, msg: `${BOYFRIEND_NAME} 使出「餓到沒耐心」！你的 HP 下降。` })
     },
     {
-      q: "第 3 關：當你心情不太好/有點累時，最好的相處方式是？",
-      a: [
-        { text: "先停一下，等你準備好再講（我在）", score: 2, fb: "正解。這是『靈魂隊友』操作。" },
-        { text: "立刻講大道理（希望你秒懂）", score: 0, fb: "有心但容易讓你更疲倦。" },
-        { text: "直接消失/冷處理", score: -2, fb: "這會扣很多分…不建議 😭" }
-      ]
+      intro: () => `最終關！${BOYFRIEND_NAME} 進入「累了想靜一靜」狀態。`,
+      prompt: () => "請選擇最終指令：",
+      moves: [
+        { name: "先停一下再講", dmg: 8, msg: "你使用了「我在，等你準備好」！效果拔群。", good: true },
+        { name: "一句重點", dmg: 6, msg: "你用一句話講清楚…有效！", good: true },
+        { name: "講大道理", dmg: 1, msg: "你開始長篇分析…效果很差。", good: false },
+        { name: "抱一下就好", dmg: 7, msg: "你抱了一下。世界安靜了。", good: true },
+      ],
+      counter: () => ({ dmg: 5, msg: `${BOYFRIEND_NAME} 使出「我想躲起來」…你有點心疼。` })
     }
   ];
 
-  let score = 0;
-  let i = 0;
-  let locked = false;
+  const $ = id => document.getElementById(id);
 
-  const $ = (id) => document.getElementById(id);
+  function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
 
-  function setScore() {
-    $("score").textContent = score;
-    $("score2").textContent = score;
+  function renderBars(){
+    $("oppHpText").textContent = state.oppHp;
+    $("meHpText").textContent = state.meHp;
+    $("oppHpFill").style.width = (state.oppHp/state.oppMax*100) + "%";
+    $("meHpFill").style.width  = (state.meHp/state.meMax*100) + "%";
   }
 
-  function show(screenId) {
-    ["screen-start","screen-quiz","screen-end"].forEach(id => $(id).classList.add("hidden"));
-    $(screenId).classList.remove("hidden");
+  function setNames(){
+    $("oppName").textContent = BOYFRIEND_NAME;
+    $("giftBtn").href = GIFT_VIDEO_URL;
   }
 
-  function renderQ() {
-    locked = false;
-    $("feedback").textContent = "";
-    $("btnNext").classList.add("hidden");
-    $("qIndex").textContent = (i+1);
-    $("question").textContent = quiz[i].q;
-    const box = $("choices");
-    box.innerHTML = "";
-    quiz[i].a.forEach((opt) => {
-      const btn = document.createElement("button");
-      btn.className = "choice";
-      btn.textContent = opt.text;
-      btn.onclick = () => pick(opt);
-      box.appendChild(btn);
-    });
-    setScore();
-  }
-
-  function pick(opt) {
-    if (locked) return;
-    locked = true;
-    score += opt.score;
-    setScore();
-    $("feedback").textContent = opt.fb + `（本關 ${opt.score >= 0 ? "+" : ""}${opt.score}）`;
-    $("btnNext").classList.remove("hidden");
-  }
-
-  function endScreen() {
-    $("finalScore").textContent = score;
-    let title, text;
-    if (score >= 6) {
-      title = "🏆 SSS級：靈魂隊友型女友";
-      text = `生日快樂，${BOYFRIEND_NAME}。這一年我最確定的一件事是：我想一直跟你組隊。謝謝你把我放在心上，也謝謝你一直在。`;
-    } else if (score >= 3) {
-      title = "⭐ A級：穩定通關型女友";
-      text = `生日快樂，${BOYFRIEND_NAME}。我們很會一起把日子過好。下一關也請讓我繼續陪你通關。`;
-    } else {
-      title = "🎀 可愛新手：需要更多抱抱練習";
-      text = `生日快樂，${BOYFRIEND_NAME}。就算我偶爾操作失誤，我也還是最喜歡你。謝謝你這一年都很包容我。`;
+  // 打字效果
+  async function typeText(text){
+    state.busy = true;
+    $("caret").style.visibility = "hidden";
+    $("dialogText").textContent = "";
+    for (let i=0;i<text.length;i++){
+      $("dialogText").textContent += text[i];
+      await new Promise(r => setTimeout(r, text[i]==="\n" ? 140 : 18));
     }
-    $("titleResult").textContent = title;
-    $("textResult").textContent = text;
-    $("btnGift").href = GIFT_VIDEO_URL;
-    show("screen-end");
+    $("caret").style.visibility = "visible";
+    state.busy = false;
   }
 
-  $("bfName").textContent = BOYFRIEND_NAME;
+  function setSubHint(t){ $("subHint").textContent = t; }
 
-  $("btnStart").onclick = () => {
-    score = 0; i = 0;
-    show("screen-quiz");
-    renderQ();
-  };
+  function setMenu(options){
+    const grid = $("menuGrid");
+    grid.innerHTML = "";
+    options.forEach((opt) => {
+      const b = document.createElement("button");
+      b.className = "btn";
+      b.innerHTML = `<span>${opt.label}</span>`;
+      b.disabled = !!opt.disabled;
+      b.onclick = opt.onClick;
+      grid.appendChild(b);
+    });
+  }
 
-  $("btnNext").onclick = () => {
-    if (i < quiz.length - 1) { i++; renderQ(); }
-    else { endScreen(); }
-  };
+  async function startStage(){
+    renderBars();
+    const s = stages[state.stage];
+    setMenu([
+      { label:"FIGHT", onClick: openFight },
+      { label:"BAG",   onClick: () => fakeBag() },
+      { label:"RUN",   onClick: () => fakeRun() },
+      { label:"INFO",  onClick: () => showInfo() }
+    ]);
+    await typeText(s.intro());
+    setSubHint("選擇指令");
+  }
 
-  $("btnRestart").onclick = () => {
-    score = 0; i = 0;
-    show("screen-start");
-    setScore();
-  };
+  function openFight(){
+    if (state.busy) return;
+    const s = stages[state.stage];
+    setMenu(s.moves.map((m, idx) => ({
+      label: m.name,
+      onClick: () => useMove(idx)
+    })));
+    setSubHint(s.prompt());
+  }
 
-  $("btnTest").onclick = () => { score = 6; endScreen(); };
+  async function useMove(idx){
+    if (state.busy) return;
+    const s = stages[state.stage];
+    const m = s.moves[idx];
+
+    // 玩家出招
+    await typeText(m.msg);
+    state.oppHp = clamp(state.oppHp - m.dmg, 0, state.oppMax);
+    renderBars();
+
+    // 判定是否過關
+    if (state.oppHp <= 0){
+      await winBattle();
+      return;
+    }
+
+    // 對手反擊（小扣血，讓它像對戰）
+    const c = s.counter();
+    await typeText(c.msg);
+    state.meHp = clamp(state.meHp - c.dmg, 0, state.meMax);
+    renderBars();
+
+    if (state.meHp <= 0){
+      await loseBattle();
+      return;
+    }
+
+    // 回到主選單
+    setMenu([
+      { label:"FIGHT", onClick: openFight },
+      { label:"BAG",   onClick: () => fakeBag() },
+      { label:"RUN",   onClick: () => fakeRun() },
+      { label:"INFO",  onClick: () => showInfo() }
+    ]);
+    setSubHint("輪到你了");
+  }
+
+  async function winBattle(){
+    // 每關把 HP 補回一點，像過關
+    await typeText(`你擊破了本關事件！\n（你們的默契 +1）`);
+    state.meHp = clamp(state.meHp + 6, 0, state.meMax);
+    state.oppHp = state.oppMax; // 重置給下一關
+    renderBars();
+
+    state.stage += 1;
+
+    if (state.stage >= stages.length){
+      // 全破
+      await typeText(`🎉 Achievement Unlocked：交往一年\n生日快樂，${BOYFRIEND_NAME}。\n我的最終指令永遠是：選你。`);
+      setSubHint("解鎖禮物！");
+      $("giftBtn").style.display = "inline-block";
+      setMenu([
+        { label:"打開禮物", onClick: () => $("giftBtn").click() },
+        { label:"再玩一次", onClick: resetAll },
+        { label:"看祝福",   onClick: () => typeText(`生日快樂，${BOYFRIEND_NAME}。\n謝謝你這一年。\n下一關也想繼續跟你組隊。`) },
+        { label:"END",     disabled:true, onClick: () => {} },
+      ]);
+      return;
+    }
+
+    // 下一關開始
+    await startStage();
+  }
+
+  async function loseBattle(){
+    await typeText(`你倒下了…但沒關係。\n重新整理一下，繼續通關！`);
+    setSubHint("再試一次");
+    setMenu([
+      { label:"CONTINUE", onClick: resetStage },
+      { label:"RESTART",  onClick: resetAll },
+      { label:"BAG",      onClick: () => fakeBag() },
+      { label:"RUN",      onClick: () => fakeRun() },
+    ]);
+  }
+
+  async function fakeBag(){
+    if (state.busy) return;
+    await typeText("你打開了 BAG…\n獲得道具：『零食』×1、 『抱抱』×∞");
+    setSubHint("選擇指令");
+  }
+
+  async function fakeRun(){
+    if (state.busy) return;
+    await typeText("你嘗試逃跑…\n但是你捨不得。");
+    setSubHint("選擇指令");
+  }
+
+  async function showInfo(){
+    if (state.busy) return;
+    await typeText(`對手：${BOYFRIEND_NAME}\n屬性：嘴硬／溫柔／可愛\n弱點：你 + 食物 + 擁抱`);
+    setSubHint("選擇指令");
+  }
+
+  function resetStage(){
+    state.busy = false;
+    state.meHp = state.meMax;
+    state.oppHp = state.oppMax;
+    renderBars();
+    startStage();
+  }
+
+  function resetAll(){
+    state.stage = 0;
+    state.meHp = state.meMax;
+    state.oppHp = state.oppMax;
+    $("giftBtn").style.display = "none";
+    startStage();
+  }
 
   // init
-  setScore();
+  setNames();
+  renderBars();
+  startStage();
 </script>
 </body>
 </html>
-
-
