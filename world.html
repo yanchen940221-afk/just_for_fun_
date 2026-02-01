@@ -142,8 +142,7 @@
       <div class="scene" id="scene">
         <!-- 上方戰鬥區 -->
         <section class="battle" id="battle" aria-label="battle">
-          <div class="hpbar" aria-hidden="true"></div>
-          <div class="hpbar2" aria-hidden="true"></div>
+  
 
           <!-- ✅ 玩家固定左下（在對話框上面，因為它在 battle 區） -->
          <img class="sprite player" src="./assets/player2.png" alt="player" />
@@ -169,151 +168,120 @@
     </main>
   </div>
 
-  <script>
-    let didFullscreen = false;
+    <script>
+  // ===== 全螢幕（只進一次） =====
+  let didFullscreen = false;
+  async function tryFullscreen(){
+    if (didFullscreen) return;
+    didFullscreen = true;
 
-async function tryFullscreen(){
-  if (didFullscreen) return;
-  didFullscreen = true;
-
-  const el = document.documentElement; // ✅ 最穩：整個頁面
-  if (!document.fullscreenElement && el.requestFullscreen) {
-    try {
-      await el.requestFullscreen();
-    } catch (e) {
-      // 失敗就算了（有些瀏覽器會擋）
-      console.log("fullscreen blocked:", e);
+    const el = document.documentElement;
+    if (!document.fullscreenElement && el.requestFullscreen) {
+      try { await el.requestFullscreen(); }
+      catch(e){ console.log("fullscreen blocked:", e); }
     }
   }
-}
 
-    const dialogTextEl = document.getElementById("dialogText");
-    const nextHintEl  = document.getElementById("nextHint");
-    const dialogEl    = document.getElementById("dialog");
+  // ===== 對話逐字 =====
+  const dialogTextEl = document.getElementById("dialogText");
+  const nextHintEl  = document.getElementById("nextHint");
+  const dialogEl    = document.getElementById("dialog");
 
-    // 玩家名從 localStorage 讀
-    const playerName = (localStorage.getItem("playerName") || "玩家").trim();
+  const playerName = (localStorage.getItem("playerName") || "玩家").trim();
 
-    // ✅ 你要的「逐字打字」台詞（自己改內容）
-    const lines = [
-      `……`,
-      `你好，${playerName}。`,
-      `準備好了嗎？我們要開始冒險了。`,
-      `（按 Enter 或點擊繼續）`
-    ];
+  const lines = [
+    `……`,
+    `你好，${playerName}。`,
+    `準備好了嗎？我們要開始冒險了。`,
+    `（按 Enter 或點擊繼續）`
+  ];
 
-    let lineIndex = 0;
-    let charIndex = 0;
-    let typing = false;
-    let timer = null;
+  let lineIndex = 0;
+  let charIndex = 0;
+  let typing = false;
+  let timer = null;
 
-    function startTypingLine(text){
-      clearTimeout(timer);
-      typing = true;
+  function startTypingLine(text){
+    clearTimeout(timer);
+    typing = true;
+    nextHintEl.style.display = "none";
+    dialogTextEl.textContent = "";
+    charIndex = 0;
+
+    const tick = () => {
+      dialogTextEl.textContent += text[charIndex];
+      charIndex++;
+
+      if (charIndex >= text.length) {
+        typing = false;
+        nextHintEl.style.display = "flex";
+        return;
+      }
+      timer = setTimeout(tick, 24);
+    };
+
+    tick();
+  }
+
+  function finishInstant(){
+    const text = lines[lineIndex] ?? "";
+    clearTimeout(timer);
+    typing = false;
+    dialogTextEl.textContent = text;
+    nextHintEl.style.display = "flex";
+  }
+
+  function next(){
+    // 正在打字 → 先補完
+    if (typing) { finishInstant(); return; }
+
+    // 下一句
+    lineIndex++;
+    if (lineIndex >= lines.length) {
       nextHintEl.style.display = "none";
-      dialogTextEl.textContent = "";
-      charIndex = 0;
-
-      const tick = () => {
-        // 一次加 1 個字（你想更快就把 delay 調小）
-        dialogTextEl.textContent += text[charIndex];
-        charIndex++;
-
-        if (charIndex >= text.length) {
-          typing = false;
-          nextHintEl.style.display = "flex";
-          return;
-        }
-        timer = setTimeout(tick, 24); // ✅ 打字速度
-      };
-
-      tick();
-      let didFullscreen = false;
-
-async function tryFullscreen(){
-  if (didFullscreen) return;
-  didFullscreen = true;
-
-  const el = document.documentElement; // 或 document.getElementById("gb");
-  if (!document.fullscreenElement && el.requestFullscreen) {
-    try { await el.requestFullscreen(); }
-    catch(e){ /* 有些瀏覽器會擋，忽略即可 */ }
+      dialogTextEl.textContent = "（劇情結束，接下來可以進地圖）";
+      return;
+    }
+    startTypingLine(lines[lineIndex]);
   }
+
+  // 初始
+  startTypingLine(lines[0]);
+
+  // ✅ 點擊對話框：先嘗試全螢幕再下一句（成功率高）
+  dialogEl.addEventListener("pointerdown", () => {
+    tryFullscreen();
+    next();
+  });
+
+  // Enter：下一句
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      next();
     }
+  });
 
-    function finishInstant(){
-      // 立刻補完這句
-      const text = lines[lineIndex] ?? "";
-      clearTimeout(timer);
-      typing = false;
-      dialogTextEl.textContent = text;
-      nextHintEl.style.display = "flex";
-    }
+  // ===== 大鼠標 =====
+  const bigCursor = document.getElementById("bigCursor");
 
-    function next(){
-      tryFullscreen();
-      // 還在打字 → 先立刻打完
-      if (typing) {
-        finishInstant();
-        return;
-      }
+  window.addEventListener("mousemove", (e) => {
+    const x = e.clientX - 6;
+    const y = e.clientY - 6;
+    bigCursor.style.transform = `translate(${x}px, ${y}px)`;
+  });
 
-      // 已打完 → 下一句
-      lineIndex++;
-      if (lineIndex >= lines.length) {
-        // ✅ 這裡你可以接下一個場景/選單/進入地圖
-        // 例：window.location.assign("map.html");
-        nextHintEl.style.display = "none";
-        dialogTextEl.textContent = "（劇情結束，接下來可以進地圖）";
-        return;
-      }
+  window.addEventListener("touchstart", (e) => {
+    const t = e.touches[0];
+    bigCursor.style.transform = `translate(${t.clientX}px, ${t.clientY}px)`;
+  }, {passive:true});
 
-      startTypingLine(lines[lineIndex]);
-    }
+  window.addEventListener("touchmove", (e) => {
+    const t = e.touches[0];
+    bigCursor.style.transform = `translate(${t.clientX}px, ${t.clientY}px)`;
+  }, {passive:true});
+</script>
 
-    // 初始顯示第一句
-    startTypingLine(lines[0]);
-
-    // ✅ 用 pointerdown 比 click 更像「立即手勢」，成功率更高
-dialogEl.addEventListener("pointerdown", () => {
-  tryFullscreen();
-  next();
-});
-
-window.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") {
-    e.preventDefault();
-    next(); // Enter 只負責下一句
-  }
-});
-      const bigCursor = document.getElementById("bigCursor");
-
-// 跟著滑鼠移動
-window.addEventListener("mousemove", (e) => {
-  // 讓游標尖端對準滑鼠：偏移一點更自然
-  const x = e.clientX - 6;
-  const y = e.clientY - 6;
-  bigCursor.style.transform = `translate(${x}px, ${y}px)`;
-});
-
-// 手機觸控也能顯示（可選）
-window.addEventListener("touchstart", (e) => {
-  const t = e.touches[0];
-  bigCursor.style.transform = `translate(${t.clientX}px, ${t.clientY}px)`;
-}, {passive:true});
-
-window.addEventListener("touchmove", (e) => {
-  const t = e.touches[0];
-  bigCursor.style.transform = `translate(${t.clientX}px, ${t.clientY}px)`;
-}, {passive:true});
-<link rel="stylesheet" href="./style.css?v=world1" />
-  /* ✅ 隱藏系統游標 */
-html, body, .gb, .gb *{
-  cursor: none !important;
-}
-
-
-  </script>
 </body>
 </html>
 
