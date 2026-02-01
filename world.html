@@ -40,13 +40,13 @@
     .player{
       left: 10px;
       bottom: 10px; /* ✅ 戰鬥區底部 = 對話框上方，所以自然「踩在框上面」 */
-      width: min(36cqw, 140px);
+      width: min(56cqw, 140px);
     }
 
     .rival{
       right: 12px;
       top: 12px;
-      width: min(36cqw, 140px);
+      width: min(56cqw, 140px);
       opacity: .95;
     }
 
@@ -130,6 +130,26 @@
     image-rendering: pixelated;
     pointer-events: none;
     z-index: 99999;
+    transform: translate(-9999px, -9999px);
+    filter: saturate(.75) contrast(1.05);
+  }
+
+      /* ✅ 隱藏系統游標：只在 world 頁面生效 */
+  html, body, #gb, #gb *{
+    cursor: none !important;
+  }
+
+  /* ✅ 大像素游標 */
+  #bigCursor{
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 64px;
+    height: 64px;
+    background: url("./assets/cursor.png") no-repeat center / contain;
+    image-rendering: pixelated;
+    pointer-events: none;
+    z-index: 999999;
     transform: translate(-9999px, -9999px);
     filter: saturate(.75) contrast(1.05);
   }
@@ -281,6 +301,7 @@
     bigCursor.style.transform = `translate(${t.clientX}px, ${t.clientY}px)`;
   }, {passive:true});
 </script>
+
 
 </body>
 </html>
