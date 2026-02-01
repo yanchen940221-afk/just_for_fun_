@@ -108,6 +108,15 @@
       display: inline-block;
     }
     @keyframes blink { 50%{ opacity:0; } }
+
+    /* ✅ World：人物不要浮動（覆蓋掉 style.css 任何動畫） */
+.sprite,
+.player,
+.rival{
+  animation: none !important;
+  transform: none !important; /* 如果之前用 transform 做上下飄，也一起重置 */
+}
+
   </style>
 </head>
 
