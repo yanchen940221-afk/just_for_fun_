@@ -335,6 +335,10 @@ html, body{
   animation: shadowSquash 1.1s ease-in-out infinite;
   will-change: transform, opacity;
 }
+.dialog{
+  bottom: 22px;   /* ✅ 原本 8px → 22px（你想更上就 28/34） */
+}
+
 
 
 
