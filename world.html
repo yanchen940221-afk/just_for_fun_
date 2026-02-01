@@ -153,6 +153,23 @@
   </div>
 
   <script>
+    let didFullscreen = false;
+
+async function tryFullscreen(){
+  if (didFullscreen) return;
+  didFullscreen = true;
+
+  const el = document.documentElement; // ✅ 最穩：整個頁面
+  if (!document.fullscreenElement && el.requestFullscreen) {
+    try {
+      await el.requestFullscreen();
+    } catch (e) {
+      // 失敗就算了（有些瀏覽器會擋）
+      console.log("fullscreen blocked:", e);
+    }
+  }
+}
+
     const dialogTextEl = document.getElementById("dialogText");
     const nextHintEl  = document.getElementById("nextHint");
     const dialogEl    = document.getElementById("dialog");
@@ -240,14 +257,19 @@ async function tryFullscreen(){
     // 初始顯示第一句
     startTypingLine(lines[0]);
 
-    // 點擊對話框 or Enter → 下一句
-    dialogEl.addEventListener("click", next);
-    window.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        next();
-      }
-    });
+    // ✅ 用 pointerdown 比 click 更像「立即手勢」，成功率更高
+dialogEl.addEventListener("pointerdown", () => {
+  tryFullscreen();
+  next();
+});
+
+window.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    next(); // Enter 只負責下一句
+  }
+});
+
   </script>
 </body>
 </html>
