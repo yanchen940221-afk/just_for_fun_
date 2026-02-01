@@ -8,6 +8,35 @@
   <!-- 跟首頁同一份 CSS（如果你叫 style.css） -->
   <link rel="stylesheet" href="./style.css?v=game1" />
   <style>
+    /* 讓 gb 畫面可以放 absolute 元素 */
+.gb{
+  position: relative;
+  padding: 14px;
+}
+
+/* scene 先當作正常容器 */
+.scene{
+  height: 100%;
+}
+
+/* ✅ 對話框浮起來（你調這裡就好） */
+.dialog{
+  position: absolute;
+  left: 14px;
+  right: 14px;
+
+  bottom: 34px;   /* ✅ 往上移：數字越大越上（例如 34→48→60） */
+}
+
+/* ✅ 角色區域避免被對話框遮住：留出對話框高度 */
+.top{
+  height: 100%;
+  display: grid;
+  place-items: center;
+  padding-top: 10px;
+  padding-bottom: 170px; /* ✅ 留空間給對話框，避免重疊（可微調 150~200） */
+}
+
     /* ✅ 放大人物：不糊、保持像素 */
 .playerWrap{
   transform: scale(1.8);   /* 1.2~1.8 自己調 */
@@ -50,7 +79,7 @@
       border: 4px solid var(--gb3);
       box-shadow: inset 0 0 0 3px var(--gb2);
       background: var(--gb0);
-      padding: 20px 12px;
+      padding: 10px 12px;
     }
 
     .line{
