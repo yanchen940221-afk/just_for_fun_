@@ -185,6 +185,17 @@
       };
 
       tick();
+      let didFullscreen = false;
+
+async function tryFullscreen(){
+  if (didFullscreen) return;
+  didFullscreen = true;
+
+  const el = document.documentElement; // 或 document.getElementById("gb");
+  if (!document.fullscreenElement && el.requestFullscreen) {
+    try { await el.requestFullscreen(); }
+    catch(e){ /* 有些瀏覽器會擋，忽略即可 */ }
+  }
     }
 
     function finishInstant(){
@@ -197,6 +208,7 @@
     }
 
     function next(){
+      tryFullscreen();
       // 還在打字 → 先立刻打完
       if (typing) {
         finishInstant();
